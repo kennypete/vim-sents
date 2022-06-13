@@ -1,0 +1,6 @@
+= vim-S.w.
+:icons: font
+
+A collection of functions to enable conversion of characters represented as
+entities in XTML1.0/HTML5, decimal, hexadecimal and UTF-8.
+
