@@ -1,0 +1,280 @@
+*sents.txt* 
+
+Author:  Peter Kenny 
+URL:     https://github.com/kennypete/vim-sents
+Licence: MIT
+
+Contents                                                             *sents-toc*
+
+1. Overview ................................................... |sents-overview|
+    1.1 The 12 Permutations ............................... |sents-permutations|
+    1.2 Special Cases .......................................... |sents-special|
+
+2. The Functions ............................................. |sents-functions|
+    2.1 S8n - Unicode (UTF-8 encoding) to named .......................... |S8n|
+    2.2 S8d - Unicode (UTF-8 encoding) to decimal ........................ |S8d|
+    2.3 S8h - Unicode (UTF-8 encoding) to hexadecimal .................... |S8h|
+    2.4 Sdn - Decimal to named ........................................... |Sdn|
+    2.5 Sdh - Decimal to hexadecimal ..................................... |Sdh|
+    2.6 Sdu - Decimal to Unicode (UTF-8 encoding) ........................ |Sdu|
+    2.7 Shn - Hexadecimal to named ....................................... |Shn|
+    2.8 Shd - Hexadecimal to decimal ..................................... |Shd|
+    2.9 Shu - Hexadecimal to Unicode (UTF-8 encoding) .................... |Shu|
+   2.10 Snd - Named to decimal ........................................... |Snd|
+   2.11 Snh - Named to hexadecimal ....................................... |Snh|
+   2.12 Snu - Named to Unicode (UTF-8 encoding)........................... |Snu|
+
+3. Commands ................................................... |sents-commands|
+
+==============================================================================
+
+
+1. OVERVIEW                                                     *sents-overview*
+
+The purpose of this plugin is to provide an easy means of globally
+substituting characters in a file from/to:
+  a) Unicode characters (e.g., CENT SIGN, glyph ¢; and specifically,
+     UTF-8 file format, the default for Vim)
+  b) Named entities (from any of the XML or HTML specifications, so HTML1.x 
+     to HTML5 and XML1.x (including XHTML1.0; e.g., ¢ is &cent; in HTML3.1+)
+  c) Decimal entities (e.g., ¢ is &#162;), and
+  d) Hexadecimal entities (e.g., ¢ is &#xa2;).
+
+Some reference links:
+https://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
+https://html.spec.whatwg.org/multipage/named-characters.html
+https://en.wikipedia.org/wiki/Glyph#Typography
+https://www.fileformat.info/info/unicode/
+
+
+1.1 THE 12 PERMUTATIONS                                    *sents-permutations*
+
+As there are up to four¹ means of expressing each Unicode character, 
+e.g., ¢, &cent;, &#162; and &#xa2;, correspondingly there are 12 functions
+provided by this plugin to deliver substitutions from one to another.
+
+   1. Unicode (UTF-8 encoding) to named            ¢ to &cent;
+   2. Unicode (UTF-8 encoding) to decimal          ¢ to &#162;
+   3. Unicode (UTF-8 encoding) to hexadecimal      ¢ to &#xa2;
+   4. Decimal to named                             &#162; to &cent;
+   5. Decimal to hexadecimal                       &#162; to &#xa2;
+   6. Decimal to Unicode (UTF-8 encoding)          &#162; to ¢
+   7. Hexadecimal to named                         &#xa2; to &cent;
+   8. Hexadecimal to decimal                       &#xa2; to &#162;
+   9. Hexadecimal to Unicode (UTF-8 encoding)      &#xa2; to ¢
+  10. Named to decimal                             &cent; to &#162;
+  11. Named to hexadecimal                         &cent; to &#xa2;
+  12. Named to Unicode (UTF-8 encoding)            &cent; to ¢
+
+  ¹ And more, potentially, e.g., \00a2, used in CSS could also be handled
+    but it has not been for now (and would increase the permutations to 20
+    notwithstanding the 'from' and 'to' hexadecimal substitutions
+    would be very similar for CSS).
+
+In some cases substitution from one form to another would produce
+unwanted results. Unicode characters above U+007E would rarely pose
+problems so all are substituted according to the specified default
+function relating to the 12 permutations. The following table
+illustrates the general treatment. More details are provided about
+this generally in 1.2 SPECIAL CASES, below, and full details
+are provided under the description of each of the 12 functions.
+
+  from⬇     to➡  Named      Decimal     Hexadecimal    UTF-8
+  Named                        All²         All²         All²
+  Decimal       IfExists³                   All          All⁴
+  Hexadecimal   IfExists³      All                       All⁴       
+  UTF-8         IfExists⁵      All⁵         All⁵          
+
+  ² Predefined XML entities &quot; &amp; &lt; &gt; and &apos; will
+    only be substituted if <q-arg> p is specified to the three
+    functions that substitute named entities.
+  ³ Because there is a one to many relationship between some decimal/
+    hexadecimal entities and named entities, only one is provided for,
+    with the non-HTML5 versions given preference.
+  ⁴ Predefined XML entities &quot; &amp; &lt; &gt; and &apos; will
+    only be substituted if <q-arg> p is specified. Note that &#9;/
+    &#x9; and &#10;/&#xa; are not substituted but all other 
+    decimal/hexadecimal entities are.
+  ⁵ Predefined XML entities &quot; &amp; &lt; &gt; and &apos; will
+    only be substituted if <q-arg> p is specified to the three
+    functions that substitute UTF-8 characters. Below U+007F are
+    only substituted when <q-arg> s is specified, but be sure to
+    read the HHHHHHH notes for things to be aware of if that is chosen.
+    Note that U+0009 {CHARACTER TABULATION} [the 'tab' character] and
+    U+0000A {LINE FEED (LF)} [Unix/Linux newline/'half' of Windows CrLf]
+    are not substituted.
+
+
+1.2 SPECIAL CASES                                               *sents-special*
+
+As alluded to above, there are some instances where substitution of an
+entity or a UTF-8 character may be unwanted. This has been partly
+handled by providing for optional <q-arg> 'switches', as noted in the
+footnotes, above. 
+
+  U+nnnn         Unicode Character(s)
+  ------         --------------------
+  U+0009         CHARACTER TABULATION
+  U+000A         LINE FEED (LF)
+     
+The 'tab' and line feed characters will rarely be desirable characters
+to substitute. This is especially so where the UTF-8 character is in
+the file. Substitution would replace such 'formatting' characters
+with their named entities (HTML5 has &Tab; and &NewLine;) or their
+decimal or hexadecimal entities. If those are wanted, then substitutions
+such as %substitute_\v%u9_\&#9;_g (to substitute tabs with &#9;). The 
+exception to this is where the character is already an entity and is
+being substituted with another entity. In such cases that is presumed
+to be 'neutral' and the substitution is executed (though sometimes
+requiring a <q-arg> s to the function called).
+
+  U+nnnn         Unicode Character(s)                                 UTF-8
+  ------         --------------------                                 -----
+  U+0020         SPACE
+  U+002D         HYPHEN-MINUS                                           -
+  U+0030-U+0039  DIGIT ZERO to DIGIT NINE                          0123456789
+  U+0041-U+005A  LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z     A...Z
+  U+0061-U+007A  LATIN SMALL LETTER A to LATIN SMALL LETTER Z         a...z
+  U+007E         TILDE                                                  ~
+
+As none of these can be represented as HTML4, XHTML1.0 or HTML5 named
+entities, substituting them to named entities is impossible. Although 
+substitution of ~ could be done, such as to &#x7e; and - to &#x2d; they 
+aren't by default, but may be substituted by specifying <q-arg> s. 
+
+))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+The following characters are, in most cases, not substituted to their UTF-8"
+character *by default* because there would often/sometimes be"
+unexpected/unwanted results. However, they can be substituted using the"
+functions when an optional q-arg is specified."
+    oFile.WriteLine strSSQ
+Glyph  Unicode Character    U+nnnn  XML     HTML5"
+-----  -----------------    -----   ---     -----"
+  !    EXCLAMATION MARK     U+0021          &excl;"
+  " & Chr(34) & "    QUOTATION MARK       U+0022  &quot;  &QUOT;"
+  #    NUMBER SIGN          U+0023          &num;"
+  $    DOLLAR SIGN          U+0024          &dollar;"
+  %    PERCENT SIGN         U+0025          &percnt;"
+  &    AMPERSAND            U+0026  &amp;"
+  '    APOSTROPHE           U+0027  &apos;"
+  (    LEFT PARENTHESIS     U+0028          &lpar;"
+  )    RIGHT PARENTHESIS    U+0029          &rpar"
+  *    ASTERISK             U+002A          &ast; &midast;"
+  +    PLUS SIGN            U+002B          &plus;"
+  ,    COMMA                U+002C          &comma;"
+  .    FULL STOP            U+002E          &period;"
+  /    SOLIDUS              U+002F          &sol;"
+  :    COLON                U+003A          &colon;"
+  ;    SEMICOLON            U+003B          &semi;"
+  <    LESS-THAN SIGN       U+003C  &lt;    &LT;"
+  =    EQUALS SIGN          U+003D          &equals;"
+  >    GREATER-THAN SIGN    U+003E  &gt;    &GT;"
+  ?    QUESTION MARK        U+003F          &quest;"
+  @    COMMERCIAL AT        U+0040          &commat;"
+  [    LEFT SQUARE BRACKET  U+005B          &lsqb; &lbrack;"
+  \    REVERSE SOLIDUS      U+005C          &bsol;"
+  ]    RIGHT SQUARE BRACKET U+005D          &rsqb; &rbrack;"
+  ^    CIRCUMFLEX ACCENT    U+005E          &Hat;"
+  _    LOW LINE             U+005F          &lowbar; &UnderBar;"
+  `    GRAVE ACCENT         U+0060          &grave; &DiacriticalGrave;"
+  {    LEFT CURLY BRACKET   U+007B          &lcub; &lbrace;"
+  |    VERTICAL LINE        U+007C          &verbar; &vert; &VerticalLine;"
+  }    RIGHT CURLY BRACKET  U+007D          &rcub; &rbrace;"
+    oFile.WriteLine strSSQ
+Exceptions to this are where that substitution involves either a change"
+from decimal entities to hexadecimal entities or vice versa.  In those"
+instances it is very probable that the user *does* want to do those"
+conversions (and there is very unlikely to be unintended consequences)."
+    oFile.WriteLine strSSQ
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+    oFile.WriteLine strSSQ
+Escaped entities (backslash, e.g., \&#38;): these are not substituted"
+because the escape backslash character precedes the entity. That can be"
+used as a means of preprocessing specific entities that the user wants"
+to exclude from the substitutions. For example:"
+  %substitute_\\\@<!&#0*38;_\&amp;_ge"
+will NOT substitute occurences of \&#38; whereas any other"
+character preceding the & is not treated as an escape character."
+    oFile.WriteLine strSSQ
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+    oFile.WriteLine strSSQ
+  The s_flags used in the substitutions are:"
+    g    Replace all occurrances in the line"
+    e    When the search pattern fails, do not issue an error message"
+    i/I  To ignore / not ignore case for the search pattern"
+    oFile.WriteLine strSSQ
+  In addition, the 'CASE IN ON PATTERN' option is employed,"
+  i.e., prepending the \c (ignore case) and \C (don't ignore case)"
+  strings. The reason for this is to be doubly cautious: the user"
+  may either have :set ignorecase or have 'magic' off."
+  Incidentally, when used interactively, i does not highlight the search"
+  pattern: %s_Ha_Hah_i will only highlight 'ha' (though does"
+  substitute 'Ha' too) whereas %s_\cHa_Hah will highlight 'Ha' and 'ha'."
+  (:h s_flags and :h 27.1 for information about \c and \C)"
+    oFile.WriteLine strSSQ
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+    oFile.WriteLine strSSQ
+  For all permutations, sm (:h smagic) is used excluding the ones going"
+  from UTF-8 (explained below). Alternatively, prepending \m could have"
+  been used to ensure 'magic', the default Vim pattern matching setting,"
+  which uses the regex patterns of grep, to apply."
+  This is unlikely to be needed in most instances, and just s / su /"
+  substitute could have been used, in case the user has another setting,"
+  which could cause some substitutions to fail, it's explicitly"
+  specified. (:h magic) However, in the case of the UTF-8 substitutions,"
+  'very magic' (\v) is prepended, e.g., %substitute_\v%ua2_\&#cent;_g"
+  substitutes all instances of ¢ with &cent;. This is also needed because"
+  'very magic' is required for finding the UTF-8 characters."
+    oFile.WriteLine strSSQ
+---------------------------------------------------------------------------"
+
+))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+2.12 Snu                                                        *sents-Snu* *Snu*
+
+Substitute named with UTF-8
+
+For example: %smagic_\C\\\@<!&cent;_\=nr2char(162,1)_geI (to substitute the
+named entity &cent; to ¢ - refer :help nr2char, including how to mandate {utf8})
+> All named XHTML1.0 and HTML5 entities get substituted though the
+  predefined XML ones (i.e., &quot;, &amp;, &lt;, &gt;, and &apos;)
+  are only substituted where <q-arg> p has been specified, i.e.:
+  Snu p
+    This will substitute &quot; with ', &amp; with &, &lt; with <, 
+    &gt; with >, and &apos; with '.
+> Regarding characters <=U+009F (e.g., &ast;): it is presumed they
+  should be substituted even though explicitly naming such standard
+  characters is unusual. The presumption is, if the user is wanting
+  to substitue all named entities, that purpose is clear and that only
+  named predefined XHTML1.0 ones should persist in the output, by default.
+> Case matters! Some entities are ambiguous if treated as case insensitive.
+  E.g.: &Amacr; and &amacr; are different characters: U+0100; and U+0101;
+  so \C is prepended and the s_flags for Snu are geI.
+
+
+
+COMMANDS                                                *sents-commands*
+
+These commands are local to the asciidoctor buffers.
+
+
+                                                           *:Asciidoctor2HTML*
+:Asciidoctor2HTML          Convert current file to HTML.
+                           Uses |g:asciidoctor_executable|.
+
+
+                                                            *:Asciidoctor2PDF*
+:Asciidoctor2PDF           Convert current file to PDF.
+                           Uses |g:asciidoctor_pdf_executable|.
+
+
+                                                           *:Asciidoctor2DOCX*
+
+                                                         *:AsciidoctorOpenPDF*
+:AsciidoctorOpenPDF        Open PDF file of the current file. It should exist
+                           (created first with |:Asciidoctor2PDF| command).
+                           Uses |g:asciidoctor_opener|.
+
+
+ vim:tw=78:et:ft=help:norl:
