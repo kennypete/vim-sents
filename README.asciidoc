@@ -4,3 +4,5 @@
 A collection of functions to enable conversion of characters represented as
 entities in XTML1.0/HTML5, decimal, hexadecimal and UTF-8.
 
+THIS IS FUNCTIONAL AT PRESENT BUT DOCUMENTATION IS INCOMPLETE &#151; IT SOULD BE CONSIDERED V0.9 &#151; MANY OTHER THINGS TO DO TO SUCH AS TESTING, SCREEN RECORDINGS OF THE SUBSTITUTiONS IN PRACTICE, ETC.
+
