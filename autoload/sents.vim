@@ -131,7 +131,30 @@
 "
 " ---------------------------------------------------------------------------
 
-function! SndFunction(xc = '')
+" ============================================================================
+" Init function requires description
+" ----------------------------------------------------------------------------
+"
+
+function! sents#init()
+  command! -nargs=? Snd call s:Snd(<q-args>)
+  command! -nargs=? Snh call s:Snh(<q-args>)
+  command! -nargs=? Sn8 call s:Sn8(<q-args>)
+
+  command! Sdn call s:Sdn()
+  command! Sdh call s:Sdh()
+  command! -nargs=? Sd8 call s:Sd8(<q-args>)
+
+  command! Shn call s:Shn()
+  command! Shd call s:Shd()
+  command! -nargs=? Sh8 call s:Sh8(<q-args>)
+
+  command! -nargs=? S8n call s:S8n()
+  command! -nargs=? S8d call s:S8d()
+  command! -nargs=? S8h call s:S8h()
+endfunction
+
+function! s:Snd(xc = '')
   " ============================================================================
   "                                     Snd
   " Substitute named with decimal
@@ -2279,7 +2302,7 @@ function! SndFunction(xc = '')
   %smagic_\C\\\@<!&zscr;_\&#120015;_geI
 endfunction
 
-function! SnhFunction(xc = '')
+function! s:Snh(xc = '')
   " ============================================================================
   "                                     Snh
   " Substitute named with hexadecimal
@@ -4427,9 +4450,9 @@ function! SnhFunction(xc = '')
   %smagic_\C\\\@<!&zscr;_\&#x1d4cf;_geI
 endfunction
 
-function! SnuFunction(xc = '')
+function! s:Sn8(xc = '')
   " ============================================================================
-  "                                     Snu
+  "                                     Sn8
   " Substitute named with UTF-8
   " ----------------------------------------------------------------------------
   " For example: %smagic_\C\\\@<!&cent;_\=nr2char(162,1)_geI
@@ -4438,7 +4461,7 @@ function! SnuFunction(xc = '')
   " > All named XHTML1.0 and HTML5 entities get substituted though the
   "   predefined XML ones (i.e., &quot;, &amp;, &lt;, &gt;, and &apos;)
   "   are only substituted where q-arg p has been specified, i.e.:
-  "   Snu p
+  "   Sn8 p
   "     This will substitute &quot; with ", &amp; with &
   "     &lt; with <, &gt; with >, and &apos; with '.
   " > Regarding characters <=U+009F (e.g., &ast;): it is presumed they
@@ -4448,7 +4471,7 @@ function! SnuFunction(xc = '')
   "   named predefined XHTML1.0 ones should persist in the output, by default.
   " > Case matters! Some entities are ambiguous if treated as case insensitive.
   "   E.g.: &Amacr; and &amacr; are different characters: U+0100; and U+0101;
-  "   so \C is prepended and the s_flags for Snu are geI.
+  "   so \C is prepended and the s_flags for Sn8 are geI.
   " ---------------------------------------------------------------------------
   %smagic_\C\\\@<!&acE;_\=nr2char(8766,1).nr2char(819,1)_geI
   %smagic_\C\\\@<!&bne;_\=nr2char(61,1).nr2char(8421,1)_geI
@@ -6576,7 +6599,7 @@ function! SnuFunction(xc = '')
   %smagic_\C\\\@<!&zscr;_\=nr2char(120015,1)_geI
 endfunction
 
-function! SdnFunction()
+function! s:Sdn()
   " ============================================================================
   "                                     Sdn
   " Substitute decimal with named
@@ -8145,7 +8168,7 @@ function! SdnFunction()
   %smagic_\\\@<!&#0*120015;_\&zscr;_ge
 endfunction
 
-function! SdhFunction()
+function! s:Sdh()
   " ============================================================================
   "                                     Sdh
   " Substitute decimal with hexadecimal
@@ -8163,9 +8186,9 @@ function! SdhFunction()
   %smagic_\\\@<!&#\(\d\+\);_\=printf('&#x%02x;',submatch(1))_ge
 endfunction
 
-function! SduFunction(xc = '')
+function! s:Sd8(xc = '')
   " ============================================================================
-  "                                     Sdu
+  "                                     Sd8
   " Substitute decimal with UTF-8
   " ----------------------------------------------------------------------------
   " Although each decimal to UTF-8 substitution could be explicit, for example:
@@ -8175,8 +8198,8 @@ function! SduFunction(xc = '')
   " the HTML5 multi-byte entities such as &bne;, i.e., &#61;&#8421;. Those
   " require explicit treatment because, if treated individually, the global
   " substitution would miss one, other, or both of the bytes.
-  " Sdu p
-  "   Sdu may take the q-arg p, which substitutes XHTML1.0
+  " Sd8 p
+  "   Sd8 may take the q-arg p, which substitutes XHTML1.0
   "   predefined entities (e.g., &#60; to <) too.
   "                    &#38;  &#60;  &#34;  &#39;  &#62;
   "                        &      <      "      '      >
@@ -8185,12 +8208,12 @@ function! SduFunction(xc = '')
   "   tag. If only some are wanted, e.g., quot(22), apos(27), and gt(3e),
   "   but neither amp(26) nor lt(3c), then doing pre-substitutions to
   "   exclude/escape out those is needed.
-  " Sdu s
+  " Sd8 s
   "   Doing generic substitutions below decimal 100 may have potential
-  "   side effects, which demand some optionality. Hence Sdu with q-arg s
+  "   side effects, which demand some optionality. Hence Sd8 with q-arg s
   "   may be used to _include_ the ASCII characters that
   "   have entity names _including_ XHTML1.0 predefined:
-  "   Examples of decimal entities substituted using Sdu s are:
+  "   Examples of decimal entities substituted using Sd8 s are:
   "                   &#54; to 6  &#92; to \  &#36; to $  &#90; to Z
   "   Consideration of whether this will cause unwanted side effects, is
   "   required. For example, if the file has been using &#92; to
@@ -8198,10 +8221,10 @@ function! SduFunction(xc = '')
   "   as a leading escape character, then substituting it to \ would
   "   negate that.
   " NB: the HTML5 entities &#9; (&Tab;) and &#10; (&NewLine;) are not in
-  " scope of Sdu s, so one/both of these are needed if that is wanted:
+  " scope of Sd8 s, so one/both of these are needed if that is wanted:
   "   %smagic_\\\@<!&#0*9;_\=nr2char(9,1)_ge
   "   %smagic_\\\@<!&#0*10;_\=nr2char(10,1)_ge
-  " > Case is n/a for solely Arabic numerals, so the s_flags for Sdu are ge
+  " > Case is n/a for solely Arabic numerals, so the s_flags for Sd8 are ge
   "   and prepending \c would be redundant.
   " ---------------------------------------------------------------------------
   %smagic_\\\@<!&#0*8766;&#0*819;_\=nr2char(8766.\=nr2char(819,1)_ge
@@ -8395,7 +8418,7 @@ function! SduFunction(xc = '')
   %smagic_\\\@<!&#0*\(\d\{3,7}\);_\=nr2char(str2nr(submatch(1),10),1)_ge
 endfunction
 
-function! ShnFunction()
+function! s:Shn()
   " ============================================================================
   "                                     Shn
   " Substitute hexadecimal with named
@@ -9963,7 +9986,7 @@ function! ShnFunction()
   %smagic_\\\@<!&#x0*1d4cf;_\&zscr;_ge
 endfunction
 
-function! ShdFunction()
+function! s:Shd()
   " ============================================================================
   "                                     Shd
   " Substitute hexadecimal with decimal
@@ -9983,9 +10006,9 @@ function! ShdFunction()
   %smagic_\c\\\@<!&#x\([0-9a-f]\+\);_\='&#'.str2nr(submatch(1),16).';'_gei
 endfunction
 
-function! ShuFunction(xc = '')
+function! s:Sh8(xc = '')
   " ============================================================================
-  "                                     Shu
+  "                                     Sh8
   " Substitute hexadecimal with UTF-8
   " ----------------------------------------------------------------------------
   " Although each hexadecimal to UTF-8 substitution could be explicit, e.g.:
@@ -9995,8 +10018,8 @@ function! ShuFunction(xc = '')
   " the HTML5 multi-byte entities such as &bne;, i.e., &#x3d;&#x20e5;. Those
   " require explicit treatment because, if treated individually, the global
   " substitution may miss one, other, or both of the bytes.
-  " Shu p
-  "   Shu may take the q-arg p, which substitutes XHTML1.0
+  " Sh8 p
+  "   Sh8 may take the q-arg p, which substitutes XHTML1.0
   "   predefined entities too.
   "                   &#x26; &#x3c; &#x22; &#x27; &#x3e;
   "                        &      <      "      '      >
@@ -10005,12 +10028,12 @@ function! ShuFunction(xc = '')
   "   tag. If only some are wanted, e.g., quot(22), apos(27), and gt(3e),
   "   but neither amp(26) nor lt(3c), then doing pre-substitutions to
   "   exclude/escape out those is needed.
-  " Shu s
+  " Sh8 s
   "   Doing generic substitutions below U+00A0 may have potential
-  "   side effects, which demand some optionality. Hence Shu with q-arg s
+  "   side effects, which demand some optionality. Hence Sh8 with q-arg s
   "   may be used to _include_ the ASCII characters that
   "   have entity names _including_ XHTML1.0 predefined:
-  "   Examples of hexadecimal entities substituted using Shu s are:
+  "   Examples of hexadecimal entities substituted using Sh8 s are:
   "                   &#x36; to 6  &#x5c; to \  &#x24; to $  &#x5a; to Z
   "   Consideration of whether this will cause unwanted side effects, is
   "   required. For example, if the file has been using &#92; to
@@ -10018,12 +10041,12 @@ function! ShuFunction(xc = '')
   "   as a leading escape character, then substituting it to \ would
   "   negate that.
   " NB: the HTML5 entities &#x9; (&Tab;) and &#xA; (&NewLine;) are
-  " specifically not in scope of Shu s substitutions, so one/both are wanted:
+  " specifically not in scope of Sh8 s substitutions, so one/both are wanted:
   "   %smagic_\\\@<!&#x0*9;_\=nr2char(9,1)_g
   "   %smagic_\c\\\@<!&#x0*a;_\=nr2char(10,1)_gi
   " > Case is sometimes relevant because hexadecimal entities may have upper
   "   case or lower case alphabetic characters as well as Arabic numerals,
-  "   so the s_flags for Shu are gei, and prepending \c is used (case
+  "   so the s_flags for Sh8 are gei, and prepending \c is used (case
   "   insensitive).
   " ---------------------------------------------------------------------------
   %smagic_\c\\\@<!&#x0*223e;&#x0*333;_\=nr2char(str2nr(223e,16)).nr2char(str2nr(333,16))_gei
@@ -10220,7 +10243,7 @@ function! ShuFunction(xc = '')
   %smagic_\c\\\@<!&#x0*\([0-9a-f]\{3,7}\);_\=nr2char(str2nr(submatch(1),16),1)_gei
 endfunction
 
-function! S8nFunction(xc = '')
+function! s:S8n(xc = '')
   " ============================================================================
   "                                     S8n
   " Substitute UTF-8 with named
@@ -11826,7 +11849,7 @@ function! S8nFunction(xc = '')
   %substitute_\v%u1d4cf_\&zscr;_ge
 endfunction
 
-function! S8dFunction(xc = '')
+function! s:S8d(xc = '')
   " ============================================================================
   "                                     S8d
   " Substitute UTF-8 with decimal
@@ -12023,7 +12046,7 @@ function! S8dFunction(xc = '')
   %smagic_\([^\d0-~]\)_\=printf('&#%d;',char2nr(submatch(0)))_ge
 endfunction
 
-function! S8hFunction(xc = '')
+function! s:S8h(xc = '')
   " ============================================================================
   "                                     S8h
   " Substitute UTF-8 with hexadecimal
@@ -12220,4 +12243,3 @@ function! S8hFunction(xc = '')
   if a:xc=='p'||a:xc=='s'|%substitute_\v%u7c_\&#x7c;_ge| endif
   %smagic_\([^\d0-~]\)_\=printf('&#x%x;',char2nr(submatch(0)))_ge
 endfunction
-
