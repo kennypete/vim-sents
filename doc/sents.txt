@@ -1,10 +1,10 @@
-*sents.txt* 
+*sents.txt*
 
-Author:  Peter Kenny 
+Author:  Peter Kenny
 URL:     https://github.com/kennypete/vim-sents
 Licence: MIT
 
-Contents                                                             *sents-toc*
+Contents                                                            *sents-toc*
 
 1. Overview ................................................... |sents-overview|
     1.1 The 12 Permutations ............................... |sents-permutations|
@@ -26,7 +26,7 @@ Contents                                                             *sents-toc*
 
 3. Commands ................................................... |sents-commands|
 
-==============================================================================
+================================================================================
 
 
 1. OVERVIEW                                                     *sents-overview*
@@ -35,7 +35,7 @@ The purpose of this plugin is to provide an easy means of globally
 substituting characters in a file from/to:
   a) Unicode characters (e.g., CENT SIGN, glyph ¢; and specifically,
      UTF-8 file format, the default for Vim)
-  b) Named entities (from any of the XML or HTML specifications, so HTML1.x 
+  b) Named entities (from any of the XML or HTML specifications, so HTML1.x
      to HTML5 and XML1.x (including XHTML1.0; e.g., ¢ is &cent; in HTML3.1+)
   c) Decimal entities (e.g., ¢ is &#162;), and
   d) Hexadecimal entities (e.g., ¢ is &#xa2;).
@@ -47,9 +47,9 @@ https://en.wikipedia.org/wiki/Glyph#Typography
 https://www.fileformat.info/info/unicode/
 
 
-1.1 THE 12 PERMUTATIONS                                    *sents-permutations*
+1.1 THE 12 PERMUTATIONS                                     *sents-permutations*
 
-As there are up to four¹ means of expressing each Unicode character, 
+As there are up to four¹ means of expressing each Unicode character,
 e.g., ¢, &cent;, &#162; and &#xa2;, correspondingly there are 12 functions
 provided by this plugin to deliver substitutions from one to another.
 
@@ -82,8 +82,8 @@ are provided under the description of each of the 12 functions.
   from⬇     to➡  Named      Decimal     Hexadecimal    UTF-8
   Named                        All²         All²         All²
   Decimal       IfExists³                   All          All⁴
-  Hexadecimal   IfExists³      All                       All⁴       
-  UTF-8         IfExists⁵      All⁵         All⁵          
+  Hexadecimal   IfExists³      All                       All⁴
+  UTF-8         IfExists⁵      All⁵         All⁵
 
   ² Predefined XML entities &quot; &amp; &lt; &gt; and &apos; will
     only be substituted if <q-arg> p is specified to the three
@@ -93,7 +93,7 @@ are provided under the description of each of the 12 functions.
     with the non-HTML5 versions given preference.
   ⁴ Predefined XML entities &quot; &amp; &lt; &gt; and &apos; will
     only be substituted if <q-arg> p is specified. Note that &#9;/
-    &#x9; and &#10;/&#xa; are not substituted but all other 
+    &#x9; and &#10;/&#xa; are not substituted but all other
     decimal/hexadecimal entities are.
   ⁵ Predefined XML entities &quot; &amp; &lt; &gt; and &apos; will
     only be substituted if <q-arg> p is specified to the three
@@ -105,24 +105,24 @@ are provided under the description of each of the 12 functions.
     are not substituted.
 
 
-1.2 SPECIAL CASES                                               *sents-special*
+1.2 SPECIAL CASES                                                *sents-special*
 
 As alluded to above, there are some instances where substitution of an
 entity or a UTF-8 character may be unwanted. This has been partly
 handled by providing for optional <q-arg> 'switches', as noted in the
-footnotes, above. 
+footnotes, above.
 
   U+nnnn         Unicode Character(s)
   ------         --------------------
   U+0009         CHARACTER TABULATION
   U+000A         LINE FEED (LF)
-     
+
 The 'tab' and line feed characters will rarely be desirable characters
 to substitute. This is especially so where the UTF-8 character is in
 the file. Substitution would replace such 'formatting' characters
 with their named entities (HTML5 has &Tab; and &NewLine;) or their
 decimal or hexadecimal entities. If those are wanted, then substitutions
-such as %substitute_\v%u9_\&#9;_g (to substitute tabs with &#9;). The 
+such as %substitute_\v%u9_\&#9;_g (to substitute tabs with &#9;). The
 exception to this is where the character is already an entity and is
 being substituted with another entity. In such cases that is presumed
 to be 'neutral' and the substitution is executed (though sometimes
@@ -138,9 +138,9 @@ requiring a <q-arg> s to the function called).
   U+007E         TILDE                                                  ~
 
 As none of these can be represented as HTML4, XHTML1.0 or HTML5 named
-entities, substituting them to named entities is impossible. Although 
-substitution of ~ could be done, such as to &#x7e; and - to &#x2d; they 
-aren't by default, but may be substituted by specifying <q-arg> s. 
+entities, substituting them to named entities is impossible. Although
+substitution of ~ could be done, such as to &#x7e; and - to &#x2d; they
+aren't by default, but may be substituted by specifying <q-arg> s.
 
 ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
@@ -187,7 +187,7 @@ from decimal entities to hexadecimal entities or vice versa.  In those"
 instances it is very probable that the user *does* want to do those"
 conversions (and there is very unlikely to be unintended consequences)."
     oFile.WriteLine strSSQ
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     oFile.WriteLine strSSQ
 Escaped entities (backslash, e.g., \&#38;): these are not substituted"
 because the escape backslash character precedes the entity. That can be"
@@ -197,7 +197,7 @@ to exclude from the substitutions. For example:"
 will NOT substitute occurences of \&#38; whereas any other"
 character preceding the & is not treated as an escape character."
     oFile.WriteLine strSSQ
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     oFile.WriteLine strSSQ
   The s_flags used in the substitutions are:"
     g    Replace all occurrances in the line"
@@ -213,7 +213,7 @@ character preceding the & is not treated as an escape character."
   substitute 'Ha' too) whereas %s_\cHa_Hah will highlight 'Ha' and 'ha'."
   (:h s_flags and :h 27.1 for information about \c and \C)"
     oFile.WriteLine strSSQ
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     oFile.WriteLine strSSQ
   For all permutations, sm (:h smagic) is used excluding the ones going"
   from UTF-8 (explained below). Alternatively, prepending \m could have"
@@ -231,17 +231,17 @@ character preceding the & is not treated as an escape character."
 
 ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
 
-2.12 Snu                                                        *sents-Snu* *Snu*
+2.12 Snu                                                       *sents-Snu* *Snu*
 
 Substitute named with UTF-8
 
 For example: %smagic_\C\\\@<!&cent;_\=nr2char(162,1)_geI (to substitute the
-named entity &cent; to ¢ - refer :help nr2char, including how to mandate {utf8})
+named entity &cent; to ¢ - refer :help nr2char, incl. how to mandate {utf8})
 > All named XHTML1.0 and HTML5 entities get substituted though the
   predefined XML ones (i.e., &quot;, &amp;, &lt;, &gt;, and &apos;)
   are only substituted where <q-arg> p has been specified, i.e.:
   Snu p
-    This will substitute &quot; with ', &amp; with &, &lt; with <, 
+    This will substitute &quot; with ', &amp; with &, &lt; with <,
     &gt; with >, and &apos; with '.
 > Regarding characters <=U+009F (e.g., &ast;): it is presumed they
   should be substituted even though explicitly naming such standard
@@ -254,7 +254,7 @@ named entity &cent; to ¢ - refer :help nr2char, including how to mandate {utf8}
 
 
 
-COMMANDS                                                *sents-commands*
+COMMANDS                                                        *sents-commands*
 
 These commands are local to the asciidoctor buffers.
 
