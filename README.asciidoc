@@ -1,4 +1,4 @@
-= vim-S.w.
+= vim-sents
 :icons: font
 
 A collection of functions to enable conversion of characters represented as
