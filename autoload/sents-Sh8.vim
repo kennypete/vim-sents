@@ -1,0 +1,113 @@
+" MIT License. Copyright © Peter Kenny
+function! sents-Sh8#c()
+  command! -range=% -nargs=? Sh8 <line1>,<line2>call s:Sh8(<q-args>)
+endfunction
+" =============================================================================
+"                                      Sh8
+" Substitute hexadecimal with UTF-8
+" -----------------------------------------------------------------------------
+function! s:Sh8(q = '')
+  if a:q=~'l'|sm_\c\\\@<!&#x0*3d;&#x0*20e5;_\=nr2char(61,1).nr2char(8421,1)_gei|endif
+  if a:q=~'l'|sm_\c\\\@<!&#x0*66;&#x0*6a;_\=nr2char(102,1).nr2char(106,1)_gei|endif
+  if a:q=~'l'|sm_\c\\\@<!&#x0*3e;&#x0*20d2;_\=nr2char(62,1).nr2char(8402,1)_gei|endif
+  if a:q=~'l'|sm_\c\\\@<!&#x0*3c;&#x0*20d2;_\=nr2char(60,1).nr2char(8402,1)_gei|endif
+  if a:q=~'p'|sm_\c\\\@<!&#x0*22;_\=nr2char(34,1)_gei|endif
+  if a:q=~'p'|sm_\c\\\@<!&#x0*26;_\=nr2char(38,1)_gei|endif
+  if a:q=~'p'|sm_\c\\\@<!&#x0*3c;_\=nr2char(60,1)_gei|endif
+  if a:q=~'p'|sm_\c\\\@<!&#x0*3e;_\=nr2char(62,1)_gei|endif
+  if a:q=~'p'|sm_\c\\\@<!&#x0*27;_\=nr2char(39,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*2a;_\=nr2char(42,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*5c;_\=nr2char(92,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*3a;_\=nr2char(58,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*2c;_\=nr2char(44,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*40;_\=nr2char(64,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*24;_\=nr2char(36,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*3d;_\=nr2char(61,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*21;_\=nr2char(33,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*60;_\=nr2char(96,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*5e;_\=nr2char(94,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*7b;_\=nr2char(123,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*5f;_\=nr2char(95,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*28;_\=nr2char(40,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*5b;_\=nr2char(91,1)_gei|endif
+  if a:q=~'c'|sm_\c\\\@<!&#x0*a;_\=nr2char(10,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*23;_\=nr2char(35,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*25;_\=nr2char(37,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*2e;_\=nr2char(46,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*2b;_\=nr2char(43,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*3f;_\=nr2char(63,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*7d;_\=nr2char(125,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*29;_\=nr2char(41,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*5d;_\=nr2char(93,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*3b;_\=nr2char(59,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*2f;_\=nr2char(47,1)_gei|endif
+  if a:q=~'c'|sm_\c\\\@<!&#x0*9;_\=nr2char(9,1)_gei|endif
+  if a:q=~'s'|sm_\c\\\@<!&#x0*7c;_\=nr2char(124,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*20;_\=nr2char(32,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*2d;_\=nr2char(45,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*30;_\=nr2char(48,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*31;_\=nr2char(49,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*32;_\=nr2char(50,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*33;_\=nr2char(51,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*34;_\=nr2char(52,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*35;_\=nr2char(53,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*36;_\=nr2char(54,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*37;_\=nr2char(55,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*38;_\=nr2char(56,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*39;_\=nr2char(57,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*41;_\=nr2char(65,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*42;_\=nr2char(66,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*43;_\=nr2char(67,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*44;_\=nr2char(68,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*45;_\=nr2char(69,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*46;_\=nr2char(70,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*47;_\=nr2char(71,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*48;_\=nr2char(72,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*49;_\=nr2char(73,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*4a;_\=nr2char(74,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*4b;_\=nr2char(75,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*4c;_\=nr2char(76,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*4d;_\=nr2char(77,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*4e;_\=nr2char(78,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*4f;_\=nr2char(79,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*50;_\=nr2char(80,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*51;_\=nr2char(81,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*52;_\=nr2char(82,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*53;_\=nr2char(83,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*54;_\=nr2char(84,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*55;_\=nr2char(85,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*56;_\=nr2char(86,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*57;_\=nr2char(87,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*58;_\=nr2char(88,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*59;_\=nr2char(89,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*5a;_\=nr2char(90,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*61;_\=nr2char(97,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*62;_\=nr2char(98,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*63;_\=nr2char(99,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*64;_\=nr2char(100,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*65;_\=nr2char(101,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*66;_\=nr2char(102,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*67;_\=nr2char(103,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*68;_\=nr2char(104,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*69;_\=nr2char(105,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*6a;_\=nr2char(106,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*6b;_\=nr2char(107,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*6c;_\=nr2char(108,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*6d;_\=nr2char(109,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*6e;_\=nr2char(110,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*6f;_\=nr2char(111,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*70;_\=nr2char(112,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*71;_\=nr2char(113,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*72;_\=nr2char(114,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*73;_\=nr2char(115,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*74;_\=nr2char(116,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*75;_\=nr2char(117,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*76;_\=nr2char(118,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*77;_\=nr2char(119,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*78;_\=nr2char(120,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*79;_\=nr2char(121,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*7a;_\=nr2char(122,1)_gei|endif
+  if a:q=~'a'|sm_\c\\\@<!&#x0*7e;_\=nr2char(126,1)_gei|endif
+  sm_\c\\\@<!&#x0*\([a-f][0-9a-f]\);_\=nr2char(str2nr(submatch(1),16),1)_gei
+  sm_\c\\\@<!&#x0*\([0-9a-f]\{3,7}\);_\=nr2char(str2nr(submatch(1),16),1)_gei
+endfunction

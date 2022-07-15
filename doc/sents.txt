@@ -4,7 +4,7 @@ Author:  Peter Kenny
 URL:     https://github.com/kennypete/vim-sents
 Licence: MIT
 
-Contents                                                            *sents-toc*
+Contents                                                             *sents-toc*
 
 1. Overview ................................................... |sents-overview|
     1.1 The 12 Permutations Handled ....................... |sents-permutations|
@@ -26,7 +26,7 @@ Contents                                                            *sents-toc*
    2.12 S8d - Unicode characters (UTF-8 encoding) to decimal ............ |:S8d|
    2.13 S8h - Unicode characters (UTF-8 encoding) to hexadecimal ........ |:S8h|
 
-================================================================================
+==============================================================================
 
 
 1. OVERVIEW                                                     *sents-overview*
@@ -41,17 +41,23 @@ substituting characters in a file from/to:
   d) Hexadecimal entities (e.g., ¢ is &#xa2;).
 
 Some reference links:
-- https://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
 - https://html.spec.whatwg.org/multipage/named-characters.html
+- https://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
 - https://en.wikipedia.org/wiki/Glyph#Typography
 - https://www.fileformat.info/info/unicode/
 
+The named entities (latest HTML5) should no longer expand because, as noted at
+the first link, above, "This list is static and will not be expanded
+or changed in the future."
 
-1.1 THE 12 PERMUTATIONS                                     *sents-permutations*
 
-As there are up to four¹ means of expressing each Unicode character,
-e.g., ¢, &cent;, &#162; and &#xa2;, correspondingly there are 12 functions
-provided by this plugin to deliver substitutions from one to another.
+1.1 THE 12 PERMUTATIONS HANDLED                             *sents-permutations*
+
+As there are many¹ means of expressing each Unicode character. Four are 
+handled by this plugin, i.e., ¢ (UTF-8), &cent; (HTML and/or XML entities),
+&#162; (decimal entitied), and &#xa2; (hexadecimal entities).
+Consequently, there are 12 functions provided to deliver substitutions
+from one form to each of the others, as detailed below.
 
   Substitution                                     Example
   ------------                                     -------
@@ -68,176 +74,308 @@ provided by this plugin to deliver substitutions from one to another.
   11. Unicode (UTF-8 encoding) to decimal          ¢ to &#162;
   12. Unicode (UTF-8 encoding) to hexadecimal      ¢ to &#xa2;
 
-  ¹ And more, potentially, e.g., \00a2, used in CSS could also be handled
-    but it has not been for now (and would increase the permutations to 20
-    notwithstanding the 'from' and 'to' hexadecimal substitutions
-    would be very similar for CSS, so it could perhaps be leveaged).
+  ¹ Potentially dozens since, e.g., \00a2, is used in CSS and there
+    are doubtless many others that could also be handled.  No others than the
+    four have been handled for now (and doing so could increase the
+    permutations almost exponentially.  Just adding CSS could add the number
+    to 20 notwithstanding the 'from' and 'to' hexadecimal substitutions
+    would be very similar for CSS, so that could, perhaps, be leveaged).
 
 In some cases, substitution from one form to another would produce
-unwanted results.  Unicode characters above U+007E would rarely pose
-problems so all are substituted according to the specified default
-function relating to the 12 permutations.  The following table
-illustrates the general treatment.  More details are provided about
-this generally in 1.2 SPECIAL CASES, below, and full details
-are provided under the description of each of the 12 functions.
+unwanted results.  Entities that can be represented as Unicode characters
+above U+007E (noting that U+007F, DEL, to U+009F are control characters so
+effectively if is also above U-009F) would almost never pose problems,
+so all such characters are substituted according to the specified default
+function relating to the 12 permutations.
 
-  from⬇     to➡  Named       Decimal     Hexadecimal    UTF-8
-  Named                        All²         All²         All²
-  Decimal       IfExists³                   All          All⁴
-  Hexadecimal   IfExists³      All                       All⁴
-  UTF-8         IfExists⁵      All⁵         All⁵
-
-  ² Predefined XML entities &quot; &amp; &lt; &gt; and &apos; will
-    only be substituted if <q-arg> p is specified to the three
-    functions that substitute named entities.
-  ³ Because there is a one to many relationship between some decimal/
-    hexadecimal entities and named entities, only one is provided for,
-    with the < HTML5 versions given preference.
-  ⁴ Predefined XML entities &quot; &amp; &lt; &gt; and &apos; will
-    only be substituted if <q-arg> p is specified.  NB: &#9;/&#x9; and
-    &#10;/&#xa; are not substituted but all other decimal/hexadecimal
-    entities are.
-  ⁵ Predefined XML entities &quot; &amp; &lt; &gt; and &apos; will
-    only be substituted if <q-arg> p is specified to the three
-    functions that substitute UTF-8 characters.  Below U+007F are
-    only substituted when <q-arg> s is specified, but be sure to
-    read the HHHHHHH notes for things to be aware of if that is chosen.
-    Note that U+0009 {CHARACTER TABULATION} [the 'tab' character] and
-    U+0000A {LINE FEED (LF)} [Unix/Linux newline/'half' of Windows CrLf]
-    are not substituted.
+The following section outlines the special cases where unwanted results
+could occur.  These relate to characters in the Controls and Basic Latin
+characters range, i.e., U+0000 to U+007F. Refer:
+https://www.w3.org/2003/entities/2007doc/000.html
+In those cases, this plugin provides a lot of optionality.  It enables
+the user to include subsets of these characters into the scope of the
+substitutions.  Care should be taken with these are there is definitely the
+potential to have unwanted results.  Nonetheless, there are valid reasons
+for all to be included as options, so the user must think before using them,
+not never use them.  "The answer is not wrong; the question was."
 
 
 1.2 SPECIAL CASES                                                *sents-special*
 
-As heralded above, there are some instances where substitution of an
-entity or a UTF-8 character may be unwanted.  This has been partly
-handled by providing for optional <q-arg> 'switches', as noted in the
-footnotes, above.
+There are some instances where substitution of an entity or a
+UTF-8 character may be unwanted.  This has been factored by providing
+optional <q-arg> arguments.  These are all denoted by a single letter
+(a, c, l, p and s).  The arguments c, p and s are valid options in all
+substitution permutations.  The a argument is valid only where the substitution
+does not involve a named entity (to or from).  And the l argument is a very
+special case, which is only applicable where the substitution involves going
+between decimal, hexadecimal, or UTF-8 (i.e., any combination of to/from
+these).
 
-Special cases apply to the following Unicode characters as outlined in the
-tables below and thier explanations.
+1.2.1 Special case option for all substitutions: c[ontol character entities]
 
-  U+nnnn         Unicode Character(s)
-  ------         --------------------
-  U+0009         CHARACTER TABULATION
-  U+000A         LINE FEED (LF)
+This is the smallest set of characters that require special treatment.
+Why &Tab; and &NewLine; were included in HTML5 I do not know, but they are,
+so they need to be treated.
 
-The 'tab' and line feed characters will rarely be characters a user wishes
-to substitute.  This is especially so where it is the UTF-8 characters that
-are in the file.  Substitution would replace such 'formatting' characters
-with entities (NB: HTML5 has &Tab; for U+0009 and &NewLine; for U+000A).
-This is likely the case regardless of whehter substitutions are to named,
-decimal, or hexadecimal entities.  If those are wanted, then substitutions
-such as %substitute_\v%u9_\&#9;_g (to substitute tabs with &#9;). The
-exception to this is where the character is already an entity and is
-being substituted with another entity. In such cases that is presumed
-to be 'neutral' and the substitution is executed (though sometimes
-requiring a <q-arg> s to the function called).
+  Unicode   Unicode Name
+  -------   ------------
+  U+0009    CHARACTER TABULATION
+  U+000A    LINE FEED (LF)
 
-  U+nnnn         Unicode Character(s)                                 UTF-8
-  ------         --------------------                                 -----
+The character U+0009, commonly known to users as "tab", which is how it
+appears on many keyboards (or as ⭾) and "line feed" character U+000A will
+rarely be ones that a user wishes to substitute.  This is especially
+so where it is "from" UTF-8 characters.  It is not common for a user to
+want a stream of a single line whereby all line feed characters are
+substituted with &#10;, &#xa; or &NewLine;, for example.  Of course, there
+may be times where this is actually wanted.  A scenario where the user wants
+a file to be a single stream of one line does happen.
+
+Substituting the named, decimal or hexadecimal versions of these between
+one another, i.e.  &#10;, &#xa; or &NewLine; to/from one another, is much
+less likely to be of any concern because if a tab or newline character had
+intentionally been included as an entity then substituting another entity
+form, rather that the UTF-8 code point, is unlikely to produce unwanted
+results (notwithstanding decimal or hexadecimal entities will be
+more widely acceptable than the HTML5 named entities).
+
+If only one of these is wanted, i.e., substutition of "tab" but not "line
+feed", then a substitution such as %substitute_\v%u9_\&#9;_g
+(to substitute tabs with &#9;) is probable preferable to using the c argument
+and then undoing the substututed "line feed" characters.
+
+1.2.2 Special case option for all substitutions: s[ymbols and punctuation]
+
+This is the largest set of special cases.  They distinctly all have the
+following features:
+
+  a. Unicode code points below U-007F,
+  b. A printable, visable, character (i.e., excluding &Tab; and &NewLine;),
+  c. Expressable as a named entity in HTML5, but
+  d. Not a specific predefined XML entity.
+
+Point d requires elaboration.  The uppercase HTML5 entities &QUOT;, &AMP;,
+&LT;, and &GT; are synonymous, in terms of their decimal, hexadecimal, and
+UTF-8 character representations.  For the purposes of using the s argument,
+their named entity forms are in scope, but for the purposes of their decimal,
+hexadecimal and UTF-8 renditions, those are addressed using argument p, which
+is outlined separately.
+
+  Unicode  Glyph  Unicode Name          HTML5 named entity    XML named entity
+  -----    -----  ------------          ------------------    ----------------
+  U+0021     !    EXCLAMATION MARK      &excl;
+  U+0022     "    QUOTATION MARK        &QUOT;                &quot;
+  U+0023     #    NUMBER SIGN           &num;
+  U+0024     $    DOLLAR SIGN           &dollar;
+  U+0025     %    PERCENT SIGN          &percnt;
+  U+0026     &    AMPERSAND             &AMP;                 &amp;
+  U+0027     '    APOSTROPHE                                  &apos;
+  U+0028     (    LEFT PARENTHESIS      &lpar;
+  U+0029     )    RIGHT PARENTHESIS     &rpar
+  U+002A     *    ASTERISK              &ast; &midast;
+  U+002B     +    PLUS SIGN             &plus;
+  U+002C     ,    COMMA                 &comma;
+  U+002E     .    FULL STOP             &period;
+  U+002F     /    SOLIDUS               &sol;
+  U+003A     :    COLON                 &colon;
+  U+003B     ;    SEMICOLON             &semi;
+  U+003C     <    LESS-THAN SIGN        &LT;                  &lt;
+  U+003D     =    EQUALS SIGN           &equals;
+  U+003E     >    GREATER-THAN SIGN     &GT;                  &gt;
+  U+003F     ?    QUESTION MARK         &quest;
+  U+0040     @    COMMERCIAL AT         &commat;
+  U+005B     [    LEFT SQUARE BRACKET   &lsqb; &lbrack;
+  U+005C     \    REVERSE SOLIDUS       &bsol;
+  U+005D     ]    RIGHT SQUARE BRACKET  &rsqb; &rbrack;
+  U+005E     ^    CIRCUMFLEX ACCENT     &Hat;
+  U+005F     _    LOW LINE              &lowbar; &UnderBar;
+  U+0060     `    GRAVE ACCENT          &grave; &DiacriticalGrave;
+  U+007B     {    LEFT CURLY BRACKET    &lcub; &lbrace;
+  U+007C     |    VERTICAL LINE         &verbar; &vert; &VerticalLine;
+  U+007D     }    RIGHT CURLY BRACKET   &rcub; &rbrace;
+
+
+1.2.3 Special case option for all substitutions: p[redefined XML entities]
+
+This is a small set of special cases.  The XML predefined named entities are
+the only default named entities in the XML1.0 standard.  Because they are
+so ubiquitous and their substitution may cause issues (e.g., substitution of
+&lt; with < being potentially read by a parser as an open tag) the argument p
+is provided so that these must be explicitly included in any substitutions.
+
+  Unicode  Glyph  Unicode Name        XML named entity
+  -------  -----  ------------        ----------------
+  U+0022     "    QUOTATION MARK      &quot;
+  U+0026     &    AMPERSAND           &amp;
+  U+0027     '    APOSTROPHE          &apos;
+  U+003C     <    LESS-THAN SIGN      &lt;
+  U+003E     >    GREATER-THAN SIGN   &gt;
+
+
+1.2.4 Special case option for some substitutions: a[lphanumeric + non-entity]
+
+None of these can be represented as HTML or XML named entities, so their
+inclusion is kind of a super-special case.  These are the most unlikely
+entities to want to substitute in either direction because substituting, for
+example, &#x30; with 0 or vice versa is unlikely a desirable thing.  However,
+substituting to/from decimal/hexidecimal is a more probable use case, e.g.,
+the ~ from &#126; to &#x7e;.  This can be achieved by using argument a.
+
+  Unicode        Unicode name                                      Glyph(s)
+  -------        ------------                                      --------
   U+0020         SPACE
-  U+002D         HYPHEN-MINUS                                           -
+  U+002D         HYPHEN-MINUS                                          -
   U+0030-U+0039  DIGIT ZERO to DIGIT NINE                          0123456789
-  U+0041-U+005A  LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z     A...Z
-  U+0061-U+007A  LATIN SMALL LETTER A to LATIN SMALL LETTER Z         a...z
+  U+0041-U+005A  LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z    A...Z
+  U+0061-U+007A  LATIN SMALL LETTER A to LATIN SMALL LETTER Z        a...z
   U+007E         TILDE                                                  ~
 
-None of these can be represented as HTML or XML named entities, so
-substituting them to named entities is impossible/not applicabele.
-Although substitution of ~ could be done, such as to &#x7e; and - to &#x2d;
-they aren't by default, but may be substituted by specifying <q-arg> s.
 
-  UTF-8  Unicode Character    U+nnnn  XML     HTML5
-  -----  -----------------    -----   ---     -----
-    !    EXCLAMATION MARK     U+0021          &excl;
-    "    QUOTATION MARK       U+0022  &quot;  &QUOT;
-    #    NUMBER SIGN          U+0023          &num;
-    $    DOLLAR SIGN          U+0024          &dollar;
-    %    PERCENT SIGN         U+0025          &percnt;
-    &    AMPERSAND            U+0026  &amp;
-    '    APOSTROPHE           U+0027  &apos;
-    (    LEFT PARENTHESIS     U+0028          &lpar;
-    )    RIGHT PARENTHESIS    U+0029          &rpar"
-    *    ASTERISK             U+002A          &ast; &midast;
-    +    PLUS SIGN            U+002B          &plus;
-    ,    COMMA                U+002C          &comma;
-    .    FULL STOP            U+002E          &period;
-    /    SOLIDUS              U+002F          &sol;
-    :    COLON                U+003A          &colon;
-    ;    SEMICOLON            U+003B          &semi;
-    <    LESS-THAN SIGN       U+003C  &lt;    &LT;
-    =    EQUALS SIGN          U+003D          &equals;
-    >    GREATER-THAN SIGN    U+003E  &gt;    &GT;
-    ?    QUESTION MARK        U+003F          &quest;
-    @    COMMERCIAL AT        U+0040          &commat;
-    [    LEFT SQUARE BRACKET  U+005B          &lsqb; &lbrack;
-    \    REVERSE SOLIDUS      U+005C          &bsol;
-    ]    RIGHT SQUARE BRACKET U+005D          &rsqb; &rbrack;
-    ^    CIRCUMFLEX ACCENT    U+005E          &Hat;
-    _    LOW LINE             U+005F          &lowbar; &UnderBar;
-    `    GRAVE ACCENT         U+0060          &grave; &DiacriticalGrave;
-    {    LEFT CURLY BRACKET   U+007B          &lcub; &lbrace;
-    |    VERTICAL LINE        U+007C          &verbar; &vert; &VerticalLine;
-    }    RIGHT CURLY BRACKET  U+007D          &rcub; &rbrace;
+1.2.5 Special case option for UTF-8-related substitutions: l
 
-These characters are, in most cases, not substituted to their UTF-8
-character (by default) because there would often/sometimes be unexpected or
-unwanted results.  However, they can be substituted using the functions
-when an optional q-arg is specified."
+The HTML5 named entities include several where the glyph is comprised of two
+Unicode code points.  An example is &NotEqualTilde; named entity, which is
+U+02242 U+00338, so comprised of two code points, and displays as ≂̸.  Such
+two code point entities pose no additional challenge to the general default
+substitutions, which both code points being substituted separately where
+they are decimal, hexadecimal or UTF-8 characters.  And named entities are
+unique so they cause no challenge either.  Where problems arise are where one
+of both of the code points is less than U-007F.  In such cases there may
+be characters substituted that would otherwise be left alone.  For example,
+the named entity &fjlig; is literally represented as f and j consecutively,
+not as a special single code point (unlike some others like &filig; U+FB01 ﬁ).
 
-Exceptions to this are where a substitution involves either a change
-from decimal entities to hexadecimal entities or vice versa.  In those
-instances it is very probable that the user does want to do those
-substitutions (and there is very unlikely to be unintended consequences).
+The four HTML5 named entities where one or both of the code points is below
+U-007F are:
+
+  Unicode        Unicode names                          HTML5 named entity
+  -------        -------------                          ------------------
+  U+003D U+20E5  EQUALS SIGN +
+                 COMBINING REVERSE SOLIDUS OVERLAY      &bne;
+  U+0066 U+006A  LATIN SMALL LETTER F +
+                 LATIN SMALL LETTER J                   &fjlig;
+  U+003E U+20D2  GREATER-THAN SIGN +
+                 COMBINING LONG VERTICAL LINE OVERLAY   &nvgt;
+  U+003C U+20D2  LESS-THAN SIGN +
+                 COMBINING LONG VERTICAL LINE OVERLAY   &nvlt;
+
+All other Unicode two code point entities are substituted by default using
+the 12 functions, however, in instances where the substitution is to or from
+UTF-8, the argument l must be used to include these four entities.
+
+
+1.2.6 Summary of arguments that may be used to extend the functions
+
+The following table summarises the specific treatment and options that
+can be applied to substitute beyond the default substitutions.  It, and the
+key that follow, largely repeats the explanations in section 1.2.1-1.2.5,
+but it may be useful to appreciate the options using a different approach.
+
+It is also important to remember that each of these options is independent,
+so, as an example, the Named to Decimal substitutions may be done with any of
+c, p, s, cp, cs, ps, or cps, or no arguments at all.
+
+  from⬇     to➡   Named     Decimal     Hexadecimal     UTF-8
+  -------------   -----     -------     -----------     -----
+  Named                      Aᶜᵖˢ         Aᶜᵖˢ          Aᶜᵖˢ
+  Decimal          Mᶜᵖˢ                   Aᵃᶜᵖˢ         Aᵃᶜˡᵖˢ
+  Hexadecimal      Mᶜᵖˢ      Aᵃᶜᵖˢ                      Aᵃᶜˡᵖˢ
+  UTF-8            Mᶜˡᵖˢ     Aᵃᶜˡᵖˢ       Aᵃᶜˡᵖˢ
+
+  Key:
+  A All are substituted, except for those where an arguement is required.
+  M As per A, however, because there are one-to-many relationships
+    between some decimal/hexadecimal entities and named entities, only
+    one is provided for, with non-HTML5 version used if it exists.
+  ᵃ Although they are not named entities, Decimal<>Hexadecimal<>UTF-8
+    substitutions are supported for characters A-Z, a-z, 0-9, space, hyphen,
+    and tilde.  These will seldom be wanted, however, the option is there,
+    using  <q-arg> a (e.g., it may be wanted in scenarios such as where the
+    input has decimal entities and the entire file needs to be
+    converted to hexadecimal).
+  ᶜ Control characters &#9;/&#x9;/&Tab; and &#10;/&#xa;/&NewLine are
+    only substituted if <q-arg> c is specified.  (Note, in just about
+    all scenarios this will be undesirable behaviour, so consider very
+    carefully before including 'c'.)
+  ˡ The <q-arg> l applies to only four HTML5 named entities where they
+    are comprised of two Unicode code points and they have one or more
+    of the code points that may be substituted unintentionally.  Those
+    entities are &bne; &fjlig; &nvgt; and &nvlt;.  If UTF-8 to decimal
+    substitution is used, words like "fjord" would be converted
+    to "&#102;&#106;ord", which although probably not problematic, may not
+    be desirable, whereas the majority of two Unicode code point
+    HTML5 entities have two code points that are above U+007F, such as
+    ≧̸ (&ngE;/&#x2267;&#x338;/&#8807;&#824;).
+  ᵖ Predefined XML entities &quot; &amp; &lt; &gt; and &apos; (or where
+    decimal, hexadecimal or UTF-8 entities are their "to" form) will
+    only be substituted if <q-arg> p is specified.  This will often be the
+    desired treatment because substitution of these will often produce
+    outcomes that are undesirable, e.g., substituting intentionally "escaped"
+    text like "This is a &lt;tag&gt;."
+  ˢ The <q-arg> s will include substitutions for common Latin 1 punctuation
+    characters, which in many instances will not be wanted.  For example,
+    subsitution of the solidus / to &sol; will rarely be wanted when
+    otherwise substituting UTF-8 to named entities, but it is there as an
+    option if it really is wanted.
 
 
 1.3 ESCAPED ENTITIES                                              *sents-escaped*
 
 There may be times where an entity specifically is not wanted to be in scope
-of substitution.  An example is in the context of quotes including entities,
+of substitution.  An example is within quoted text that include entities,
 e.g., "The cent character may be represented as \&cent;, \&#162;, or \&#xa2."
-As this plugin was initially contemplated in relation to Asciidoc files,
-the escape character recognised in the command functions is the backwards
-solidus (\).  This means that, for example, \&cent; is not substituted.
-If different escape characters are wanted a global substitution could be
+As this plugin was initially contemplated in the context of editing Asciidoc
+files, the escape character recognised in the functions is the backwards
+solidus (\).  This means that, for example, \&cent; is never substituted.
+If a different escape character(s) is wanted, a global substitution could be
 used to preprocess the file, of course.  Similarly, if a particular entity
 is not wanted to be in scope of substitution, preprocessing to escape it
-can also be done, to exclude it from the substitution, for example:
+can also be done, to exclude it from the substitution, for example, to ensure
+no &cent; entities are substituted, a preprocessing substitution like this:
+
   %substitute_&cent;_\\\&cent;_g
-will add a backwards solidus to all &cent; instances ensuring that the
-command substutions Snd, Snh and Sn8 would all not substitute any occurences
-of the escaped entity.
+
+...will add a backwards solidus to all &cent; named entity instances, which
+ensures that none of command substutions Snd, Snh or Sn8 would substitute
+any occurences of that escaped entity.
 
 
 1.4 STRUCTURE OF THE SUBSTITUTIONS                              *sents-structure*
 
-1.4.1 The % symbol
+1.4.1 Range
 
-All of the substutions are applied globally, so the first character of all
-the commands within the substitution functions is the percent sign (%). This
-is because that is the most efficient means of specifying the whole file, as
-indicated in the vim help, :h |range|, *:%* is equal to 1,$ (the entire file).
+All of the substitutions may be qualified by prefixing a range, that is,
+in the same form as is done for prefixing a range to a "normal" substitute
+command.  That is because all of the functions are defined with their commands
+of the following form, using Sh8 to illustrate:
+
+  command! -range=% -nargs=? Sh8 <line1>,<line2>call s:Sh8(<|q-args|>)
+
+What this means is that the command Sh8 will:
+  - run over the default range *:%* (i.e., the whole file)            -range%
+  - take zero or one nargs, which are explained in Section 1.2     -nargs=?
+
 
 1.4.2 substitute, smagic, and very magic (\v)
 
 The substitute command, |:substitute| |:su| or |:s| is the base for all of
 the individual and collective substitutions deployed.  However, it is only
-used in its base form in the 'from' UTF-8 substitutions because the |magic|
+used in its base form in the "from" UTF-8 substitutions because the |magic|
 option is utilised in all of the other substitutions.  And, since it is
 possible that the user has disabled magic by default, it is mandated by using
-|smagic| as the substitution command in all of the named, decimal and
+|smagic| or |sm| as the substitution command in all of the named, decimal and
 hexadecimal entity substitutions.  It was also possible to use |\m| but
 I preferred not to use that as it is both easier to read and more obvious to
-use |smagic| than s/\m (the succinct alternative). The following illustrate
-the use of smagic and substitute for the &cent; entity:
+use |sm| than s/\m.  The following illustrate the use of sm and s for
+the &cent; entity:
 
-  %smagic_\C\\\@<!&cent;_\&#162;_geI
-  %substitute_\v%ua2_\&cent;_ge
+  sm_\C\\\@<!&cent;_\&#162;_geI
+  s_\v%ua2_\&cent;_ge
 
-The first illustrates smagic being used to substutute all &cent; named entities
-to the decimal entity &#162;.  The second illustrates substitute being used
-to substitute all UTF-8 ¢ characters to the named entity &cent;.
+The first illustrates smagic being used to substitute the &cent; named entity
+to the decimal entity &#162;.  The second illustrates substituting the
+UTF-8 ¢ character to the named entity &cent;.
 
 The second example also illustrates the use of 'very magic' (|\v|) which has
 been used in all instances of searching for UTF-8 characters.  More is
@@ -248,14 +386,15 @@ explained about this in 1.4.6.1, below.
 The next part of every substutute command is the |pattern-delimiter|, which
 in every instance is the LOW LINE (U+005F) '_' character.  As the vim help
 says, using a character other then the SOLIDUS (U+002F) '/' is sometimes a
-good idea, and that's exactly how I found it because it made for clearer
-commands, at least in my opinion. compare these:
+good idea, and that's exactly what has been done to make for clearer
+commands (well, in my opinion).  Compare these:
 
-  %smagic_\C\\\@<!&cent;_\&#162;_geI
-  and
-  %smagic/\C\\\@<!&cent;/\&#162;/geI
+  %sm_\C\\\@<!&cent;_\&#162;_geI
 
-The proximate use of the '/' and '\' I find harder to read in these commands.
+  %sm/\C\\\@<!&cent;/\&#162;/geI
+
+The proximate use of the '/' and '\' are arguably difficult to distinguish
+in these commands.
 
 1.4.4 Case sensitivity options \c and \C
 
@@ -263,26 +402,26 @@ The next part of the commands is the employment, in the Sxx Sxx commands, of
 the |\c| option and for Sxx and Sxx the |\C| options.  These mandate case
 insenstivity and sensitivity respectively.  The reason for this is that some
 patterns are irrelevant in terms of case, e.g., hexadecimal entities are
-the same regardless of whether they are &#xa2; or &#xA2;, for instance.  On the
-other hand, named entities may be entirely different if case is not mandated
-as being sensitive, e.g., &Amacr; and &amacr; are different characters,
-U+0100 and U+0101, Ā and ā.
+the same regardless of whether they are &#xa2; or &#xA2;, for instance.
+On the other hand, named entities may be entirely different if case
+is not specified as being sensitive, e.g., &Amacr; and &amacr; are
+entirely different Unicode characters, U+0100 and U+0101, glyphs Ā and ā.
 
 1.4.5 Escape character \ for negative lookbehind assertion
 
-The next component (used in all bar the 'from' UTF-8 commands) handles
+The next component (used in all bar the "from" UTF-8 commands) handles
 the '\' character, which, as explained above, is used as the escape
 charater.  This involves first specifying the charater, which
 requires '\\' (as '\' itself needs to be escaped).  The next part
 is the 'negative lookbehind assertion' \@<! which is the same as saying
 "match the following pattern EXCEPT where it is preceeded by the character
 before \@<!" ... meaning \\\@<! says to match the search pattern except if it
-is preceded by the reverse solidus (\).
+is preceded by the reverse solidus (\), which itself requires excaping.
 
 1.4.6 Search pattern
 
-The search pattern's text comes next.  This is either specific to a
-character or is a pattern that matches many characters.
+The search pattern's text comes next.  This is either specific to a character
+or is a pattern that matches many characters.
 
 1.4.6.1 Specific to a character
 
@@ -292,23 +431,26 @@ structured to handle leading zeros, so &#0162; will still be found when
 matching the decimal entity for cent.  In the case of UTF-8 characters,
 the 'very magic' option (|\v|) is used, e.g., \v%ua2 to match the ¢
 character.  It would have been possible just to use the literal UTF-8
-character, however, because the functions were built (and will be maintained)
-from a spreadsheet and non-UTF-8 script-compatible source, it seemed more
-practical to use the 'very magic' option for the regex search pattern.
+character, however, it is safer and clearer to use the approach taken
+because event though Vim is a UTF-8 compatible application, the display of
+some characters is impossible (e.g., &lrm; LEFT-TO-RIGHT MARK, U+200E, which
+is a non-displayed character) or would cause issues (e.g., &NewLine, the
+control character for line feed).  Quite simply, the best approach is to
+use the 'very magic' option for the regex search pattern.
 
 1.4.6.2 Matching many characters of the same type
 
-In many cases the search pattern can be a pattern that searches for more than
+In many cases the search pattern is a pattern that searches for more than
 a distinct single character.  Examples of these are:
 
-  1) %smagic_\\\@<!&#\(\d\+\);_\=printf('&#x%02x;',submatch(1))_ge
-  2) %smagic_\c\\\@<!&#x\([0-9a-f]\+\);_\='&#'.str2nr(submatch(1),16).';'_gei
-  3) %smagic_\([^\d0-~]\)_\=printf('&#%d;',char2nr(submatch(0)))_ge
+  1) sm_\\\@<!&#\(\d\+\);_\=printf('&#x%02x;',submatch(1))_ge
+  2) sm_\c\\\@<!&#x\([0-9a-f]\+\);_\='&#'.str2nr(submatch(1),16).';'_gei
+  3) sm_\([^\d0-~]\)_\=printf('&#%d;',char2nr(submatch(0)))_ge
 
 In example 1, above, the pattern \(\d\+\) matches any number of digits;
 in example 2, the pattern \([0-9a-f]\+\ matches any number of digits and/or
 characters a to f (upper or lowercase due to the preceding \c option). Both of
-these are faily common usage that will be found with a Google/DDG search.
+these are faily common usage that will be found with a DuckDuck/Google search.
 
 Example 3 is worthy of more detailed explanation. The pattern \([^\d0-~]\)
 matches any UTF-8 character that is not (i.e., ^) in the range of
@@ -324,54 +466,51 @@ U+007B through U+007D.
 1.4.7 Replacement pattern
 
 Next, following a pattern delimiter is the regex replacement pattern.  For
-all except the UTF-8 chatacters, that starts with an escaped ampersand (\&)
-ensuring the ampersand is literally in the output.  Several approaches to
-determining the output character are deployed:
+all except the UTF-8 characters, that starts with an escaped ampersand (\&)
+ensuring the ampersand is literally in the output (and not the search pattern
+output itself, i.e., what & does).  Several approaches to determining the
+output character are deployed:
 
-  - literal: e.g., %smagic_\C\\\@<!&cent;_\&#162;_geI, where &#162; is
+  - literal: e.g., %sm_\C\\\@<!&cent;_\&#162;_geI, where &#162; is
     precisely what is output
-  - number value: e.g., %smagic_\C\\\@<!&cent;_\=nr2char(162,1)_geI.
+  - number value: e.g., %sm_\C\\\@<!&cent;_\=nr2char(162,1)_geI.
     Refer :h |nr2char()|, which outputs the UTF-8 character (with decimal
-    as the number value), so in this case ¢
+    as the number value), so, in this case, ¢
   - submatch: using the last example in 1.4.6, above, the replacement pattern
     may utilise components of the search pattern.  In this instance,
     %smagic_\([^\d0-~]\)_\=printf('&#%d;',char2nr(submatch(0)))_ge
     takes the found character, i.e. submatch(0), and then uses |char2nr| to
-    return the number value of the found character and output the decimal
+    return the number value of the found character and outputs the decimal
     value (%d) of that using |printf()| preceded by '&#' and succeeded by ';'.
-    In other words, it will find, for example, ¢ and output &#162;, the S8d,
+    In other words, it will find, for example, ¢ and output &#162;,
     i.e., substitute the UTF-8 characher with its associated decimal entity.
 
 1.4.8 The s_flags
 
 The |s_flags| used in the substitutions are:
 
-  g   Replace all occurrences in the line (:h |:s_g|)
-  e   When the search pattern fails, don't issue an error message (:h |:s_e|)
-  i/I To ignore / not ignore case for the search pattern (:h |:s_i|)
+  g    Replace all occurrences in each line in the range specified (:h |:s_g|)
+  e    When the search pattern fails, don't issue an error message (:h |:s_e|)
+  i/I  To ignore / not ignore case for the search pattern (:h |:s_i|)
 
-Combined with '%' (refer 1.4.1, above), the 'g' s_flag ensures that the
-substitution is executed across the entire file and for all occurrences
-of the search pattern in every line.
+The s_flag e is used in every case.  Because warnings of no matches are
+decidedly unhelpful in the context of a tool like this, especially given there
+could be hundreds of substitutions called by some of the functions,
+error/warning messages are suppressed.
 
-Because warnings of no matches are not very helpful in the context of a tool
-like this, especially when there are sometimes hundreds of substitutions
-called with some of the functions, error/warning messages are not output in
-any of the substitutions, enabled by using s_flag 'e' in all instances.
-
-The last s_flag 'i' and s_flag 'I' are not striclty necessary but do no harm.
-It is being doubly cautious using them, i.e., 'i' ensures case insensitivity
-and 'I' ensures sensitivity.  As explained in 1.4.4, above, this is already
+The last s_flag i and s_flag I are not striclty necessary but do no harm.
+It is being doubly cautious using them, i.e., i ensures case insensitivity
+and I ensures sensitivity.  As explained, above, this is already
 determined by using the \c (ignore case) and \C (don't ignore case) options.
-The reason for doubling down on this is the user may either have
-:set ignorecase or have 'magic' off.  The latter is not that relevant
+The reason for doubling down on this is that the user may either have
+:set ignorecase or have "magic" off.  The latter is not that relevant
 because the use of smagic overrides any such setting and the explicit use of
 option \C ensures that case sensitivity is applied in the cases it is used.
 Incidentally, when used interactively, 'i' does not highlight the search
-pattern: %s_Ha_Hah_i will only highlight 'ha' (though does
-substitute 'Ha' too) whereas %s_\cHa_Hah will highlight 'Ha' and 'ha'.
-(:h s_flags and :h 27.1 for information about \c and \C).  In conclusion,
-retaining 'i' and 'I' s_flags is more for as a visual aid than being
+pattern: %s_Ha_Hah_i will only highlight "ha" (though does
+substitute "Ha" too) whereas %s_\cHa_Hah will highlight "Ha" and "ha".
+(:h |s_flags| and :h |27.1| for information about \c and \C).  In conclusion,
+retaining i and I s_flags is more for a visual aid than being
 necessary, but as (where it is specified) it is the very last character
 of each substitution command, it has been retained.
 
@@ -380,18 +519,23 @@ of each substitution command, it has been retained.
 
 There are 12 commands, each of which calls a distinct function to substitute
 from one form to another. They are intentionally kept to three characters
-to make it easy to determine the ones that're needed. All commands' first
-characher is 'S'. Letters two and three are one of the four handled types:
+to make it easy to determine or remember the ones that are wanted.
+
+All commands' first character is S.  Letters two and three are one of
+the four handled types:
   '8' means Unicode characters (UTF-8)
   'd' means decimal entities
   'h' means hexadecimal entities, and
   'n' means named entities.
-This means it is very easy to ascertain which one is needed. So, 'S' followed
-by the 'from' and then the 'to' form. So, an example is Snd, which will
-substitute named entities with decimal entities.  In some instances the
-command will not substitute the predefined XML entities nor substitute to
-the lower numbered Unicode characters by default.  In those cases a q-arg
-may be used to extend the scope to those characters too.
+
+This means it is very easy to ascertain which one is needed.  So, S followed
+by the "from" and then the "to".  To illustrate, Snd, substitutes
+named entities with decimal entities.  Most of the characters/entities
+that will commonly be desirable substitution candidates are substituted by
+default, however, as outlined in great detail in Section SSSSS, the
+ability to extend the substitutions to other characters like the predefined
+XML entities, punctuation symbols that are not normally desirable candidates
+such as "@", and other special instances can be specified.
 
 2.3 Sn8                                                        *sents-Snu* *Snu*
 
