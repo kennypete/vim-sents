@@ -1,5 +1,5 @@
 " MIT License. Copyright © Peter Kenny
-function! sents-Sn8#c()
+function! f#sn8#Sn8()
   command! -range=% -nargs=? Sn8 <line1>,<line2>call s:Sn8(<q-args>)
 endfunction
 " =============================================================================

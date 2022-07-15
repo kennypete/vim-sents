@@ -1,5 +1,5 @@
 " MIT License. Copyright © Peter Kenny
-function! sents-Sdn#c()
+function! f#sdn#Sdn()
   command! -range=% -nargs=? Sdn <line1>,<line2>call s:Sdn(<q-args>)
 endfunction
 " =============================================================================

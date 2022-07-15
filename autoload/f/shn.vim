@@ -1,5 +1,5 @@
 " MIT License. Copyright © Peter Kenny
-function! sents-Shn#c()
+function! f#shn#Shn()
   command! -range=% -nargs=? Shn <line1>,<line2>call s:Shn(<q-args>)
 endfunction
 " =============================================================================

@@ -1,5 +1,5 @@
 " MIT License. Copyright © Peter Kenny
-function! sents-Snd#c()
+function! f#snd#Snd()
   command! -range=% -nargs=? Snd <line1>,<line2>call s:Snd(<q-args>)
 endfunction
 " =============================================================================

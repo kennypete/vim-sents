@@ -1,5 +1,5 @@
 " MIT License. Copyright © Peter Kenny
-function! sents-Shd#c()
+function! f#shd#Shd()
   command! -range=% -nargs=? Shd <line1>,<line2>call s:Shd(<q-args>)
 endfunction
 " =============================================================================

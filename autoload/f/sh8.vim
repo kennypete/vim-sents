@@ -1,5 +1,5 @@
 " MIT License. Copyright © Peter Kenny
-function! sents-Sh8#c()
+function! f#sh8#Sh8()
   command! -range=% -nargs=? Sh8 <line1>,<line2>call s:Sh8(<q-args>)
 endfunction
 " =============================================================================
